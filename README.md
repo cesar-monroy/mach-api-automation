@@ -11,7 +11,7 @@ Este proyecto cumple dos propósitos principales:
 
 ### 🎯 Estructura Similar a GenericRestClient
 
-El `RestClient` está estructurado de manera similar a `GenericRestClient` del proyecto MACH-CORE-AUTOMATION para mantener consistencia y facilitar la migración entre proyectos. Los métodos principales (`runSimpleWebService`, `runWebServiceWithBody`) siguen el mismo patrón, lo que permite una curva de aprendizaje más suave.
+El `RestClient` está estructurado de manera similar a `GenericRestClient` del proyecto mach-mobile-automation para mantener consistencia y facilitar la migración entre proyectos. Los métodos principales (`runSimpleWebService`, `runWebServiceWithBody`) siguen el mismo patrón, lo que permite una curva de aprendizaje más suave.
 
 ## ✨ Características
 
@@ -139,54 +139,6 @@ String responseBody = response.extract().body().asString();
 String userName = response.extract().body().jsonPath().getString("name");
 ```
 
-#### Ejemplo completo
-
-```java
-// 1. Crear cliente con diferentes tipos de autenticación
-RestClient client = new RestClient("https://api.example.com", "/v1");
-RestClient clientWithToken = new RestClient("https://api.example.com", "/v1", "token");
-RestClient clientWithAuth = new RestClient("https://api.example.com", "/v1", "user", "pass");
-
-// 2. Ejecutar requests simples
-ValidatableResponse getResponse = client.runSimpleWebService(Method.GET, "/users/1");
-
-// 3. Ejecutar con query parameters
-Map<String, Object> queryParams = new HashMap<>();
-queryParams.put("page", 1);
-queryParams.put("limit", 10);
-ValidatableResponse listResponse = client.runSimpleWebService(
-    Method.GET, null, queryParams, "/users");
-
-// 4. Ejecutar con path parameters
-Map<String, Object> pathParams = new HashMap<>();
-pathParams.put("id", 1);
-ValidatableResponse userResponse = client.runSimpleWebService(
-    Method.GET, null, "/users/{id}", pathParams);
-
-// 5. Ejecutar con body
-Map<String, Object> requestBody = new HashMap<>();
-requestBody.put("name", "John Doe");
-requestBody.put("email", "john@example.com");
-ValidatableResponse createResponse = client.runWebServiceWithBody(
-    Method.POST, "/users", requestBody);
-
-// 6. Ejecutar con body y headers personalizados
-Map<String, Object> headers = new HashMap<>();
-headers.put("X-Custom-Header", "value");
-ValidatableResponse createWithHeaders = client.runWebServiceWithBody(
-    Method.POST, headers, "/users", requestBody);
-
-// 7. Ejecutar con body y path parameters
-Map<String, Object> updateBody = new HashMap<>();
-updateBody.put("name", "Jane Doe");
-ValidatableResponse updateResponse = client.runWebServiceWithBodyAndPathParams(
-    Method.PUT, null, "/users/{id}", pathParams, updateBody);
-
-// 8. Obtener última respuesta desde SessionStorage
-Response lastResponse = RestClient.getLastResponse();
-if (lastResponse != null) {
-    String responseBody = ResponseExtractor.extractJsonPath(lastResponse, "name");
-}
 ```
 
 ## 📚 API Reference
@@ -344,76 +296,6 @@ mach-api-framework/
 - **Allure**: Reportes de pruebas
 - **Gson/Jackson**: Procesamiento JSON
 - **SLF4J**: Logging
-
-## 📝 Ejemplos
-
-Ver los ejemplos en:
-- `src/test/java/com/mach/api/account/AccountApiTest.java` - Tests para creación de usuarios con Account API
-- `src/main/java/com/mach/api/account/AccountApiClient.java` - Cliente para Account API
-
-### Uso: Account API - Creación de Usuarios
-
-Ejemplo de uso con el endpoint Account API para crear nuevos usuarios:
-
-#### Usando AccountApiClient (Recomendado)
-
-```java
-import com.mach.api.account.AccountApiClient;
-import com.mach.api.account.model.AccountRequest;
-import com.mach.api.account.model.AccountAction;
-
-// 1. Crear cliente con Bearer token
-AccountApiClient accountClient = new AccountApiClient("your-bearer-token");
-
-// 2. Crear usuario con configuración por defecto
-ValidatableResponse response = accountClient.createAccount();
-response.statusCode(200);
-
-// 3. Crear usuario con argumentos personalizados
-Map<String, Object> args = new HashMap<>();
-args.put("email", "user@example.com");
-args.put("validateEmail", true);
-ValidatableResponse response2 = accountClient.createAccount(args);
-
-// 4. Crear usuario con request completo
-AccountRequest request = new AccountRequest();
-AccountAction action = new AccountAction();
-action.setName("createAccountAction");
-action.setArgs(new HashMap<>());
-request.setActions(new AccountAction[]{action});
-
-ValidatableResponse response3 = accountClient.createAccount(request);
-```
-
-#### Usando RestClient directamente
-
-```java
-// 1. Crear cliente con Bearer token
-RestClient client = new RestClient(
-    "https://account-faker-api-staging-stg.soymach.com", 
-    "", 
-    "your-bearer-token"
-);
-
-// 2. Preparar request con POJO
-AccountRequest request = new AccountRequest();
-AccountAction action = new AccountAction();
-action.setName("createAccountAction");
-action.setArgs(new HashMap<>());
-request.setActions(new AccountAction[]{action});
-
-// 3. Preparar headers
-Map<String, Object> headers = new HashMap<>();
-headers.put("X-Api-Key", "ii92khXeY#q<t38W!8m{");
-headers.put("Content-Type", "application/json");
-
-// 4. Ejecutar POST request
-ValidatableResponse response = client.runWebServiceWithBody(
-    Method.POST, headers, "/account", request);
-
-// 5. Validar respuesta
-response.statusCode(200);
-```
 
 ## 🤝 Contribución
 
