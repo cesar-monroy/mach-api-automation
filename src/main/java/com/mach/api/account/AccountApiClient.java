@@ -24,8 +24,21 @@ public class AccountApiClient {
     private static final String BASE_URI = System.getenv("ACCOUNT_API_BASE_URI") != null 
             ? System.getenv("ACCOUNT_API_BASE_URI") 
             : System.getProperty("account.api.base.uri", "https://account-faker-api-staging-stg.soymach.com");
+    private static final String BEARER_TOKEN = System.getenv("ACCOUNT_API_BEARER_TOKEN") != null 
+            ? System.getenv("ACCOUNT_API_BEARER_TOKEN") 
+            : System.getProperty("account.api.bearer.token", null);
     
     private final RestClient restClient;
+
+    /**
+     * Default constructor - loads Bearer token from environment or system properties
+     */
+    public AccountApiClient() {
+        if (BEARER_TOKEN == null) {
+            throw new IllegalStateException("Bearer token is required. Set ACCOUNT_API_BEARER_TOKEN environment variable or account.api.bearer.token system property.");
+        }
+        this.restClient = new RestClient(BASE_URI, "", BEARER_TOKEN);
+    }
 
     /**
      * Constructor with Bearer token
