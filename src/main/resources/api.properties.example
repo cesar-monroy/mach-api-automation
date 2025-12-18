@@ -1,0 +1,18 @@
+# API Configuration Example
+# Copy this file as api.properties and configure according to your environment
+# 
+# IMPORTANT: Add api.properties to .gitignore to avoid committing credentials
+
+# Base URI of the API
+api.base.uri=https://jsonplaceholder.typicode.com
+
+# Base path (optional, default: /api/v1)
+api.base.path=
+
+# Authentication - Bearer Token
+# api.bearer.token=your-bearer-token-here
+
+# Authentication - Basic Auth
+# api.username=your-username
+# api.password=your-password
+
