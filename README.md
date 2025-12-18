@@ -432,4 +432,3 @@ Este proyecto es propiedad de MACH y está destinado para uso interno.
 ## 📞 Soporte
 
 Para soporte o preguntas, contacta al equipo de automatización.
-
