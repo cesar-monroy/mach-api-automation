@@ -24,7 +24,6 @@
         <!-- Framework Versions -->
         <rest.assured.version>5.4.0</rest.assured.version>
         <testng.version>7.8.0</testng.version>
-        <junit.version>5.10.0</junit.version>
         <allure.version>2.24.0</allure.version>
 
         <!-- JSON Processing -->
@@ -66,14 +65,6 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
-        </dependency>
-
-        <!-- JUnit 5 (optional, for JUnit users) -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Allure -->
