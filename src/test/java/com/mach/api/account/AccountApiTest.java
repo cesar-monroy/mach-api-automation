@@ -1,5 +1,7 @@
 package com.mach.api.account;
 
+import com.mach.api.account.model.AccountAction;
+import com.mach.api.account.model.AccountRequest;
 import com.mach.api.test.BaseApiTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -11,7 +13,6 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Test class for Account Faker API - User creation endpoint.
- * Uses AccountApiClient to avoid code duplication.
  */
 public class AccountApiTest extends BaseApiTest {
 
@@ -46,6 +47,59 @@ public class AccountApiTest extends BaseApiTest {
         args.put("validateEmail", true);
         
         accountClient.createAccount(args)
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    public void testCreateAccountWithBuilder() {
+        AccountAction action = AccountAction.builder()
+                .name("createAccountAction")
+                .args(new HashMap<>())
+                .build();
+
+        AccountRequest request = AccountRequest.builder()
+                .actions(new AccountAction[]{action})
+                .build();
+
+        accountClient.createAccount(request)
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    public void testCreateAccountWithBuilderAndCustomArgs() {
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.put("email", "builder@example.com");
+        customArgs.put("validateEmail", true);
+        customArgs.put("sendWelcomeEmail", false);
+
+        AccountAction action = AccountAction.builder()
+                .name("createAccountAction")
+                .args(customArgs)
+                .build();
+
+        AccountRequest request = AccountRequest.builder()
+                .actions(new AccountAction[]{action})
+                .build();
+
+        accountClient.createAccount(request)
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    public void testCreateAccountWithBuilderFluentStyle() {
+        AccountRequest request = AccountRequest.builder()
+                .actions(new AccountAction[]{
+                        AccountAction.builder()
+                                .name("createAccountAction")
+                                .args(Map.of("email", "fluent@example.com", "validateEmail", true))
+                                .build()
+                })
+                .build();
+
+        accountClient.createAccount(request)
                 .statusCode(200)
                 .body(notNullValue());
     }

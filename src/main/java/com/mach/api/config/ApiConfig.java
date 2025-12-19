@@ -86,7 +86,7 @@ public class ApiConfig {
     /**
      * Get property value
      */
-    private String getProperty(String key, String defaultValue) {
+    public String getProperty(String key, String defaultValue) {
         return properties.getProperty(key, defaultValue);
     }
 
