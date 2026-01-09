@@ -5,10 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Request model for Account API.
- * Used to create new user accounts.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

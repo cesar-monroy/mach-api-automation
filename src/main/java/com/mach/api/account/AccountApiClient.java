@@ -12,13 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Client for Account API - User creation service.
- * Provides methods to create new user accounts.
- * 
- * Configuration is loaded from ServiceConfig using the "account" service name.
- * Supports configuration via environment variables (ACCOUNT_API_*) or system properties.
- */
 public class AccountApiClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountApiClient.class);
@@ -136,7 +129,7 @@ public class AccountApiClient {
     
     /**
      * Get the service configuration (for advanced usage)
-     * 
+     *
      * @return ServiceConfig instance
      */
     public ServiceConfig getConfig() {
