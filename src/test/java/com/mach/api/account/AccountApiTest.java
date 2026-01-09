@@ -2,6 +2,7 @@ package com.mach.api.account;
 
 import com.mach.api.account.model.AccountAction;
 import com.mach.api.account.model.AccountRequest;
+import com.mach.api.account.model.AccountResponse;
 import com.mach.api.test.BaseApiTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -9,7 +10,9 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Test class for Account Faker API - User creation endpoint.
@@ -22,15 +25,16 @@ public class AccountApiTest extends BaseApiTest {
     @BeforeClass
     public void setUpClass() {
         super.setUpClass();
-        
-        // Load Bearer token from environment or use default for testing
-        String bearerToken = System.getenv("ACCOUNT_API_BEARER_TOKEN") != null 
-                ? System.getenv("ACCOUNT_API_BEARER_TOKEN") 
-                : System.getProperty("account.api.bearer.token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.QLhk4yMHoZgbCwvELWPcC5ll2sVj0t-Gy-eaw5vFywI");
+       
+        String bearerToken = System.getenv("FAKER_API_TOKEN_STG");
+        if (bearerToken == null || bearerToken.isEmpty()) {
+            throw new IllegalStateException(
+                "FAKER_API_TOKEN_STG environment variable is required. " +
+                "Please set it before running tests: export FAKER_API_TOKEN_STG=your-token-here"
+            );
+        }
         
         accountClient = new AccountApiClient(bearerToken);
-        
-        LOG.info("Account API Test setup completed");
     }
 
     @Test
@@ -103,5 +107,39 @@ public class AccountApiTest extends BaseApiTest {
                 .statusCode(200)
                 .body(notNullValue());
     }
+
+    @Test
+    public void testCreateAccountEmailValidation() {
+        // Arrange - Define the email to send in the request
+        String expectedEmail = "test.validation@example.com";
+        
+        Map<String, Object> customArgs = new HashMap<>();
+        customArgs.put("email", expectedEmail);
+        customArgs.put("validateEmail", true);
+
+        AccountAction action = AccountAction.builder()
+                .name("createAccountAction")
+                .args(customArgs)
+                .build();
+
+        AccountRequest request = AccountRequest.builder()
+                .actions(new AccountAction[]{action})
+                .build();
+
+        AccountResponse response = accountClient.createAccount(request)
+                .statusCode(200)
+                .body(notNullValue())
+                .extract()
+                .body()
+                .as(AccountResponse.class);
+
+        assertEquals(response.getEmail(), expectedEmail, 
+                "El email en la respuesta debe coincidir con el email enviado en el parámetro");
+        
+        assertThat("MachId should not be null", response.getMachId(), notNullValue());
+        assertThat("DocumentNumber should not be null", response.getDocumentNumber(), notNullValue());
+        assertThat("Phone should not be null", response.getPhone(), notNullValue());
+    }
+    
 }
 

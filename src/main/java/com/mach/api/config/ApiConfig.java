@@ -1,22 +1,21 @@
 package com.mach.api.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Configuration manager for API testing framework.
- * Reads configuration from system properties, environment variables, or properties file.
+ * Reads configuration from system properties and environment variables.
+ * 
+ * Priority: System Properties > Environment Variables > Defaults
  */
 public class ApiConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApiConfig.class);
     private static ApiConfig instance;
-    private final Properties properties;
+    private final Map<String, String> config;
 
     private ApiConfig() {
-        this.properties = loadProperties();
+        this.config = loadConfig();
     }
 
     /**
@@ -30,64 +29,52 @@ public class ApiConfig {
     }
 
     /**
-     * Load properties with priority: System Properties > Environment Variables > Properties File
+     * Load configuration with priority: System Properties > Environment Variables > Defaults
      */
-    private Properties loadProperties() {
-        Properties props = new Properties();
+    private Map<String, String> loadConfig() {
+        Map<String, String> config = new HashMap<>();
 
-        // Load from properties file
-        try {
-            java.io.InputStream inputStream = getClass().getClassLoader()
-                    .getResourceAsStream("api.properties");
-            if (inputStream != null) {
-                props.load(inputStream);
-                LOG.debug("Loaded properties from api.properties file");
-            }
-        } catch (Exception e) {
-            LOG.debug("No api.properties file found, using defaults");
-        }
-
-        // Override with environment variables
+        // Load from environment variables
         String baseUri = System.getenv("API_BASE_URI");
         if (baseUri != null) {
-            props.setProperty("api.base.uri", baseUri);
+            config.put("api.base.uri", baseUri);
         }
 
         String basePath = System.getenv("API_BASE_PATH");
         if (basePath != null) {
-            props.setProperty("api.base.path", basePath);
+            config.put("api.base.path", basePath);
         }
 
         String bearerToken = System.getenv("API_BEARER_TOKEN");
         if (bearerToken != null) {
-            props.setProperty("api.bearer.token", bearerToken);
+            config.put("api.bearer.token", bearerToken);
         }
 
         String username = System.getenv("API_USERNAME");
         if (username != null) {
-            props.setProperty("api.username", username);
+            config.put("api.username", username);
         }
 
         String password = System.getenv("API_PASSWORD");
         if (password != null) {
-            props.setProperty("api.password", password);
+            config.put("api.password", password);
         }
 
         // Override with system properties (highest priority)
         System.getProperties().forEach((key, value) -> {
             if (key.toString().startsWith("api.")) {
-                props.setProperty(key.toString(), value.toString());
+                config.put(key.toString(), value.toString());
             }
         });
 
-        return props;
+        return config;
     }
 
     /**
      * Get property value
      */
     public String getProperty(String key, String defaultValue) {
-        return properties.getProperty(key, defaultValue);
+        return config.getOrDefault(key, defaultValue);
     }
 
     /**

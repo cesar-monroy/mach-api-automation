@@ -17,7 +17,7 @@ import java.util.Map;
  * Provides methods to create new user accounts.
  * 
  * Configuration is loaded from ServiceConfig using the "account" service name.
- * Supports configuration via environment variables (ACCOUNT_API_*), system properties, or properties file.
+ * Supports configuration via environment variables (ACCOUNT_API_*) or system properties.
  */
 public class AccountApiClient {
 
@@ -29,7 +29,7 @@ public class AccountApiClient {
 
     /**
      * Default constructor - loads configuration from ServiceConfig
-     * Configuration priority: System Properties > Environment Variables > Properties File
+     * Configuration priority: System Properties > Environment Variables
      * 
      * @throws IllegalStateException if required configuration (base URI or bearer token) is missing
      */

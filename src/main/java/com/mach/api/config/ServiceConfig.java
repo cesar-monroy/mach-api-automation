@@ -4,7 +4,7 @@ package com.mach.api.config;
  * Configuration for a specific API service.
  * Supports multiple services with different URIs, paths, and authentication.
  * 
- * Priority: System Properties > Environment Variables > Properties File > Defaults
+ * Priority: System Properties > Environment Variables > Defaults
  * 
  * Example usage:
  * <pre>
@@ -45,24 +45,21 @@ public class ServiceConfig {
     public static ServiceConfig forService(String serviceName) {
         String normalizedService = serviceName.toUpperCase().replaceAll("[^A-Z0-9]", "_");
         
-        // Priority: System Property > Environment Variable > Properties File > Default
+        // Priority: System Property > Environment Variable > Default Constant
         String baseUri = getConfigValue(normalizedService, "BASE_URI", 
-                getProperty("api." + serviceName.toLowerCase() + ".base.uri", null));
+                ApiEndpoints.getBaseUri(serviceName));
         
         String basePath = getConfigValue(normalizedService, "BASE_PATH", 
-                getProperty("api." + serviceName.toLowerCase() + ".base.path", ""));
+                ApiEndpoints.getBasePath(serviceName));
         
-        String bearerToken = getConfigValue(normalizedService, "BEARER_TOKEN", 
-                getProperty("api." + serviceName.toLowerCase() + ".bearer.token", null));
+        String bearerToken = getConfigValue(normalizedService, "BEARER_TOKEN", null);
         
         String apiKey = getConfigValue(normalizedService, "API_KEY", 
-                getProperty("api." + serviceName.toLowerCase() + ".key", null));
+                ApiEndpoints.getApiKey(serviceName));
         
-        String username = getConfigValue(normalizedService, "USERNAME", 
-                getProperty("api." + serviceName.toLowerCase() + ".username", null));
+        String username = getConfigValue(normalizedService, "USERNAME", null);
         
-        String password = getConfigValue(normalizedService, "PASSWORD", 
-                getProperty("api." + serviceName.toLowerCase() + ".password", null));
+        String password = getConfigValue(normalizedService, "PASSWORD", null);
 
         return new ServiceConfig(serviceName, baseUri, basePath, bearerToken, apiKey, username, password);
     }
@@ -89,13 +86,6 @@ public class ServiceConfig {
         return defaultValue;
     }
 
-    /**
-     * Get property from properties file (lowest priority)
-     */
-    private static String getProperty(String key, String defaultValue) {
-        ApiConfig config = ApiConfig.getInstance();
-        return config.getProperty(key, defaultValue);
-    }
 
     public String getServiceName() {
         return serviceName;
